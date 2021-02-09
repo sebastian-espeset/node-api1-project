@@ -102,6 +102,28 @@ app.delete('/users/:id',(req, res)=>{
     }
 })
 
+//Update a user with new info, find via ID
+app.put('/users/:id',(req,res)=>{
+    const userId = req.params.id;
+    const { name, bio } = req.body;
+    
+    //Find the index of the user using findIndex and userId
+    const indexOfUser = users.findIndex(user=>user.id===userId);
+
+    try{ 
+        if(indexOfUser!= -1){
+            users[indexOfUser] = { userId, name, bio };
+            res.status(200).json(users)
+        } else{
+            res.status(404).json({message:`No user with id ${userId} exists`})
+        }
+
+    } catch(e){
+        res.status(500).json({message:`server error:${e}`})
+    }
+
+
+})
 
 
 app.listen(port, ()=>{
