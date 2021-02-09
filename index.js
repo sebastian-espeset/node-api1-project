@@ -16,7 +16,7 @@ app.use(express.json());
 const port = 5000;
 
 //dummy data
-const users=[
+let users=[
     {
         id:generate(),
         name:"Sebastian",
@@ -79,6 +79,29 @@ app.get('/users/:id',(req,res)=>{
     }
     
 })
+
+//Delete a specific user using the method as find, only using the CRUD op delete
+//use try and catch.. but why?
+
+app.delete('/users/:id',(req, res)=>{
+    const userId = req.params.id;
+
+    try{
+        //test if the user with that id exists, if not...
+        if(!users.find(user=>user.id===userId)){
+            res.status(404).json({message:`User id, ${userId}, not found`})
+        }//if so return a new array filtering out that user
+        else{
+            users = users.filter(user=>user.id !==userId)
+            res.status(200).json({message:`User ${userId} was deleted`,users})
+        }
+    }
+    /*return status 500, a generic catch all status... "something went wrong" */ 
+    catch(e){
+        res.status(500).json({message:`Error:${e}`})
+    }
+})
+
 
 
 app.listen(port, ()=>{
