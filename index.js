@@ -10,7 +10,7 @@ const generate = require("shortid").generate;
 //define app as express, don't know why...
 const app = express();
 
-//app.use??? Dont know why...
+//app.use??? Dont know why but that fixed the post request
 app.use(express.json());
 
 const port = 5000;
@@ -40,11 +40,12 @@ const users=[
 ]
 
 // START YOUR SERVER HERE
-//axios.get
+//axios.get, to return the dummy data
 app.get('/users',(req, res)=>{
     res.status(200).json(users)
 });
-//axios.post
+
+//axios.post, adds a user to the api
 app.post('/users',(req,res)=>{
     //destructure the body requirement
     const { name, bio} = req.body;
@@ -52,7 +53,7 @@ app.post('/users',(req,res)=>{
     if(!name || !bio){
         res.status(400).json({message:`Error, must include both name and bio`})
     }
-    //if name and bio are included, post to server and return the new server, include status 201 i.e created a resource successfully
+    //if name and bio are included, post to api and return the new array, include status 201 i.e created a resource successfully
     else{
         const newUser={id:generate(),name, bio};
         users.push(newUser);
@@ -60,8 +61,28 @@ app.post('/users',(req,res)=>{
     }
 })
 
+//Return a specific user using id.params
+app.get('/users/:id',(req,res)=>{
+    //define the id of the user you want to find
+    const userId = req.params.id;
+
+    //define the user using the array method .find and the specific user id
+    const foundUser = users.find(user=>user.id===userId)
+
+    //if the userId does not exist, return 404
+    if(!foundUser){
+        res.status(404).json({message:`no user exists with id: ${userId}`});
+    } 
+    //if the id is a positive match, return that user
+    else{
+        res.status(200).json(foundUser);
+    }
+    
+})
+
+
 app.listen(port, ()=>{
-    console.log(`server running at port: ${port}`)
+    console.log(`server running at port: ${port}`,users)
 });
 
 
